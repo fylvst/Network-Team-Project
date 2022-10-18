@@ -29,19 +29,20 @@ public class MainServer {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             String request = bufferedReader.readLine();
+            System.out.println(request);
             String[] paras = request.split("&");
 
             // 多线程，只适合没有前提状态的操作，所以Android每次发送的内容都要带上自己的账号信息
             switch (paras[0]) {
                 // 用户 管理员登录
                 case "login":
-                    Login loginThread = new Login();
+                    Login loginThread = new Login(printWriter);
                     pool.execute(loginThread);
                     break;
 
                     // 用户注册 管理员添加用户
                 case "register":
-                    Register registerThread = new Register();
+                    Register registerThread = new Register(printWriter);
                     pool.execute(registerThread);
                     break;
 
@@ -70,7 +71,7 @@ public class MainServer {
 
                     // 用户 收信
                 case "check":
-                    Check userCheckThread = new Check();
+                    Check userCheckThread = new Check(printWriter);
                     pool.execute(userCheckThread);
                     break;
 
@@ -86,9 +87,9 @@ public class MainServer {
                     pool.execute(revoke);
                     break;
 
-                    // 管理员禁用用户
+                    // 管理员禁用或解禁用户 "ban&用户的email&y/n"
                 case "ban":
-                    Ban ban = new Ban();
+                    Ban ban = new Ban(paras[1],paras[2]);
                     pool.execute(ban);
                     break;
 
@@ -98,6 +99,8 @@ public class MainServer {
                     pool.execute(sendMany);
                     break;
 
+                    //TODO 其实还有一些需求，但是我这里暂时没写，详见邮件说明书
+                //TODO 比如：设置邮箱大小，协议启停，设置协议端口，设置服务器域名，邮件过滤/账号过滤/IP地址过滤，日志查看/清除/设置日志存储位置/设置日志文件大小
             }
 
         } catch (Exception e) {
