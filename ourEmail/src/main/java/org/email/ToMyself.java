@@ -1,5 +1,7 @@
 package org.email;
 
+import java.sql.ResultSet;
+
 public class ToMyself implements Runnable {
     String realSender = "mail1062964308@yrj.com";
     String receiver = "1062964308@yrj.com";
@@ -18,7 +20,12 @@ public class ToMyself implements Runnable {
 
     @Override
     public void run() {
-
+        DataBaseConnector dataBaseConnector=new DataBaseConnector();
+        try {
+            ResultSet s=dataBaseConnector.quest("");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
